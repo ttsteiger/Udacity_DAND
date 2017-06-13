@@ -6,3 +6,4 @@ Contents:
 
 * Statistical Investigation of the Stroop Effect
 * Analysis of Titanic Data
+* Wrangling of OpenStreetMap Data
