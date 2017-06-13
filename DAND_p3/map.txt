@@ -1,3 +1,5 @@
 Link to the OSM location:
 
 https://www.openstreetmap.org/relation/1682248
+
+Download data trough Overpass API and store the file as "zurich.osm" in the data folder.
