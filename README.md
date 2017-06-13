@@ -5,5 +5,9 @@ This repository contains all the projects I finished during my Data Analyst Nano
 Contents:
 
 * [Statistical Investigation of the Stroop Effect](/DAND_p1)
-* Analysis of Titanic Data
-* Wrangling of OpenStreetMap Data
+* [Analysis of Titanic Data](/DAND_p2)
+* [Wrangling of OpenStreetMap Data](/DAND_p3)
+*
+*
+*
+
