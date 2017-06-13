@@ -3,3 +3,5 @@ Link to the OSM location:
 https://www.openstreetmap.org/relation/1682248
 
 Download data trough Overpass API and store the file as "zurich.osm" in the data folder.
+
+Or set the file parameter in "main.py" to os.path.normpath("data/zurich_sample50.osm") to perform the data wrangling on a small data sample.
