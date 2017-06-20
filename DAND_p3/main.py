@@ -9,13 +9,13 @@ import xml.etree.cElementTree as ET
 
 import audit
 import clean
-import data_exploration
+import explore
 import shape
 
 file = os.path.normpath("data/zurich.osm")
 
 ## data exploration
-root_attributes, child_attributes = data_exploration.get_file_structure(file)
+root_attributes, child_attributes = explore.get_file_structure(file)
 
 print("Root elements and their attributes:")
 pprint.pprint(root_attributes)
