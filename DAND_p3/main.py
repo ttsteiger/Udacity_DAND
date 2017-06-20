@@ -25,14 +25,14 @@ print("Children and their attributes within the root elements:")
 pprint.pprint(child_attributes)
 print()
 
-tag_keys = data_exploration.get_tag_keys(file, ['node', 'way', 'relation'])
-way_tag_surface_values = data_exploration.get_tag_key_values(file, ['way'], 'surface')
+tag_keys = explore.get_tag_keys(file, ['node', 'way', 'relation'])
+way_tag_surface_values = explore.get_tag_key_values(file, ['way'], 'surface')
 
 # print out top 20 entries
 print("Most frequently occuring tag keys:")
 pprint.pprint(tag_keys[:20])
 print()
-print("Most frequently occuring ")
+print("Most frequently occuring way tag surface values:")
 pprint.pprint(way_tag_surface_values[:20])
 
 ## data auditing
