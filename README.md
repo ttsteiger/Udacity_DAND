@@ -7,7 +7,7 @@ Contents:
 * [Statistical Investigation of the Stroop Effect](/DAND_p1)
 * [Analysis of Titanic Data](/DAND_p2)
 * [Wrangling of OpenStreetMap Data](/DAND_p3)
-*
+* [Exploratory Data Analysis in R](/DAND_p4)
 *
 *
 
