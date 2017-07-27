@@ -3,7 +3,9 @@
 import numpy as np
 import pandas as pd
 import pickle
+import sys
 
+sys.path.append("./tools/")
 from format_data import convert_dict_to_df
 
 # load dictionary containing the dataset
@@ -19,8 +21,12 @@ features = ['poi', 'bonus', 'deferral_payments', 'deferred_income',
 			'from_poi_to_this_person', 'from_this_person_to_poi', 
 			'shared_receipt_with_poi', 'to_messages']
 
-data_df = convert_dict_to_df(data_dict, features, remove_NaN=True, 
+data_df = convert_dict_to_df(data_dict, features, remove_NaN=False, 
 						remove_all_zeroes=True, remove_any_zeroes=False, 
 						sort_keys=True)
 
 print(data_df.shape)
+print(data_df.dtypes)
+print(data_df.isnull().sum())
+
+print(data_df['loan_advances'])
