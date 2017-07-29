@@ -148,26 +148,31 @@ def convert_dict_to_df(dictionary, features, remove_NaN=True,
             val_dict[feature] = val
 
         # do not add all zero data points if remove_all_zeroes is set to True
-        if remove_all_zeroes:
+        if remove_all_zeroes:       
             append = False
-            for _, val in val_dict.items(): 
-                if val != 0 and val != "NaN":
-                    append = True
-                    break
+            for key, val in val_dict.items(): 
+                if key != 'poi' and key != 'name': # exclude 'poi' and 'name' from criteria
+                    if val != 0 and val != "NaN":
+                        append = True
+                        break
         
         # don not add single zero data points if remove_any_zeroes is set to 
         # True
         elif remove_any_zeroes:
             append = True
-            if 0 in val_list[1:] or "NaN" in val_list[1:]: # exclude 'poi' from criteria????
+            keys =  [f for f in features if f not in ('poi', 'name')] # exclude 'poi' and 'name' from criteria
+            val_list = [val_dict.get(k) for k in keys] # list containing values of remaining features
+
+            if 0 in val_list or "NaN" in val_list:
                 append = False
         
         # all data points are added 
         else:
             append = True
-
+    
+        
         # append data point if it is flagged for addition
         if append:
             df = df.append(val_dict, ignore_index=True)
-
+        
     return df
