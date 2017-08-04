@@ -5,6 +5,7 @@ import pandas as pd
 
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
+from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.preprocessing import MinMaxScaler
 
@@ -127,7 +128,7 @@ def scatter_plot(df, x, y, normalize=True):
     plt.show()
     
     
-def clf_score_table(names, classifiers, X, y, random_state=None):
+def print_score_table(names, classifiers, X, y, random_state=None):
     """
     Print out table containing accuracy, precision and recall scores for the passed classifiers.
     
@@ -141,7 +142,7 @@ def clf_score_table(names, classifiers, X, y, random_state=None):
         clf_results[n] = {'accuracy': [], 'precision': [], 'recall': []}
 
     # training and test set split
-    sss = StratifiedShuffleSplit(n_splits=10, test_size=0.33, random_state=random_state)
+    sss = StratifiedShuffleSplit(n_splits=100, test_size=0.33, random_state=random_state)
     for train_ixs, test_ixs in sss.split(X, y):
         X_train, X_test = X[train_ixs, :], X[test_ixs, :]
         y_train, y_test = y[train_ixs] , y[test_ixs]
@@ -169,3 +170,33 @@ def clf_score_table(names, classifiers, X, y, random_state=None):
         recall = round(np.mean(clf_results[n]['recall']), 2)
 
         print("{:<25} {:<10} {:<10} {}".format(n, accuracy, precision, recall))
+
+
+def best_parameter_search(names, classifiers, X, y, param_grid, score='accuracy', random_state=None):
+    """
+    Exhaustive search over specified parameter values for passed classifiers. Prints out a table 
+    displaying the results.
+    
+    Args:
+        names:
+        classifiers:
+        X:
+        y:
+        param_grid:
+        score:
+        random_state:
+
+    Returns:
+
+    """
+
+    print("{:<25} {:<10} {}".format("Classifier", score.title(), "Parameters"))
+    print("------------------------------------------------")
+    for n, clf in zip(names, classifiers):
+        clf_scores_parameters[n] = {}
+
+        cv = StratifiedShuffleSplit(n_splits=100, test_size=0.33, random_state=random_state)
+        clf = GridSearchCV(clf, param_grid[n], cv=cv, scoring=score) #'{}_macro'.format(
+        clf.fit(X, y)
+
+        print("{:<25} {:<10} {}".format(n, round(clf.best_score_, 2), clf.best_params_))
