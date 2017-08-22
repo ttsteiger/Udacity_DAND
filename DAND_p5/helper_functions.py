@@ -193,8 +193,6 @@ def best_parameter_search(names, classifiers, X, y, param_grid, score='accuracy'
     print("{:<25} {:<10} {}".format("Classifier", score.title(), "Parameters"))
     print("------------------------------------------------")
     for n, clf in zip(names, classifiers):
-        clf_scores_parameters[n] = {}
-
         cv = StratifiedShuffleSplit(n_splits=100, test_size=0.33, random_state=random_state)
         clf = GridSearchCV(clf, param_grid[n], cv=cv, scoring=score) #'{}_macro'.format(
         clf.fit(X, y)
