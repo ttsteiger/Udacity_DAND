@@ -172,34 +172,6 @@ def print_score_table(names, classifiers, X, y, random_state=None):
         print("{:<25} {:<10} {:<10} {}".format(n, accuracy, precision, recall))
 
 
-def best_parameter_search(names, classifiers, X, y, param_grid, score='accuracy', random_state=None):
-    """
-    Exhaustive search over specified parameter values for passed classifiers. Prints out a table 
-    displaying the results.
-    
-    Args:
-        names:
-        classifiers:
-        X:
-        y:
-        param_grid:
-        score:
-        random_state:
-
-    Returns:
-
-    """
-
-    print("{:<25} {:<10} {}".format("Classifier", score.title(), "Parameters"))
-    print("------------------------------------------------")
-    for n, clf in zip(names, classifiers):
-        cv = StratifiedShuffleSplit(n_splits=100, test_size=0.33, random_state=random_state)
-        clf = GridSearchCV(clf, param_grid[n], cv=cv, scoring=score)
-        clf.fit(X, y)
-
-        print("{:<25} {:<10} {}".format(n, round(clf.best_score_, 2), clf.best_params_))
-
-
 def find_best_parameters(names, classifiers, X, y, param_grid, score='accuracy', random_state=None):
     """
     Exhaustive search over specified parameter values for passed classifiers optimizing based on the specified
