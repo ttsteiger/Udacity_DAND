@@ -128,48 +128,43 @@ def scatter_plot(df, x, y, normalize=True):
     plt.show()
     
     
-def print_score_table(names, classifiers, X, y, random_state=None):
+def get_classifier_scores(clf, X, y, random_state=None):
     """
-    Print out table containing accuracy, precision and recall scores for the passed classifiers.
-    
-    Args:
-    
     
     """
-    # dictionary to store results of all validation runs
+    
+    accuracies, precisions, recalls = [], [], []
+    sss = StratifiedShuffleSplit(n_splits=100, test_size=0.33, random_state=42)
+    
+    for train_ixs, test_ixs in sss.split(X.values, y.values):
+        X_train, X_test = X.values[train_ixs, :], X.values[test_ixs, :]
+        y_train, y_test = y.values[train_ixs] , y.values[test_ixs]
+    
+        clf.fit(X_train, y_train)
+        pred = clf.predict(X_test)
+
+        accuracies.append(clf.score(X_test, y_test))
+        precisions.append(precision_score(y_test, pred))
+        recalls.append(recall_score(y_test, pred))
+    
+    return [np.mean(accuracies), np.mean(precisions), np.mean(recalls)]
+
+
+def get_multi_classifier_scores(names, classifiers, X, y, random_state=None):
+    """
+    """
+    
     clf_results = {} 
-    for n in names:
-        clf_results[n] = {'accuracy': [], 'precision': [], 'recall': []}
-
-    # training and test set split
-    sss = StratifiedShuffleSplit(n_splits=100, test_size=0.33, random_state=random_state)
-    for train_ixs, test_ixs in sss.split(X, y):
-        X_train, X_test = X[train_ixs, :], X[test_ixs, :]
-        y_train, y_test = y[train_ixs] , y[test_ixs]
-
-        # loop trough all classifiers
-        for n, clf in zip(names, classifiers):      
-            clf.fit(X_train, y_train)
-            pred = clf.predict(X_test)
-
-            accuracy = clf.score(X_test, y_test)
-            precision = precision_score(y_test, pred)
-            recall = recall_score(y_test, pred)
-
-            # store scores in the respective result list
-            clf_results[n]['accuracy'].append(accuracy)
-            clf_results[n]['precision'].append(precision)
-            clf_results[n]['recall'].append(recall)
-
-    # print out results
-    print("{:<25} {:<10} {:<10} {}".format("Classifier", "Accuracy", "Precision", "Recall"))
-    print("------------------------------------------------------")
-    for n in names:
-        accuracy = round(np.mean(clf_results[n]['accuracy']), 2)
-        precision = round(np.mean(clf_results[n]['precision']), 2)
-        recall = round(np.mean(clf_results[n]['recall']), 2)
-
-        print("{:<25} {:<10} {:<10} {}".format(n, accuracy, precision, recall))
+    
+    for n, clf in zip(names, classifiers):
+        clf_results[n] = {}
+        scores = get_classifier_scores(clf, X, y, random_state=random_state)
+        
+        clf_results[n]['accuracy'] = scores[0]
+        clf_results[n]['precision'] = scores[1]
+        clf_results[n]['recall'] = scores[2]
+    
+    return clf_results
 
 
 def find_best_parameters(names, classifiers, X, y, param_grid, score='accuracy', random_state=None):
@@ -205,28 +200,75 @@ def find_best_parameters(names, classifiers, X, y, param_grid, score='accuracy',
     return clf_scores
 
 
-def print_score_parameter_table(names, scores):
+def optimize_features_and_parameters(names, classifiers, X, y, top_features, param_grid, score='accuracy', random_state=None):
     """
-    ....
+    """
+    # perform parameter optimization for varying number of input features
+    clf_scores = {}
+    for i in range(1, len(top_features) + 1):
+        features = top_features[:i]
+        X_i = X.loc[:, features].values
+        
+        scores = find_best_parameters(names, classifiers, X_i, y, param_grid, score=score, random_state=random_state)
+        clf_scores[i] = scores
     
-    Args:
+    # select best results for each classifier
+    clf_best_scores = {}
+    for n in names:
+        best_score, best_i, best_params = 0, 0, None
+        
+        for i, v in clf_scores.items():
+            for k, v in v.items():
+                if k == n:
+                    if v[score] > best_score:
+                        best_score = v[score]
+                        best_i = i
+                        best_params = v['parameters']
+        
+        clf_best_scores[n] = {score: best_score, 'input features': best_i, 'parameters': best_params}
+            
+    return clf_best_scores
+
+
+def print_classifier_table(scores):
+    """
     
     """
     
-    # find scoring metric
-    v = list(scores.values())[0]
-    score = [k for k in v.keys() if k != 'parameters'][0]
+    # get column names
+    col_headers = ["Classifier"]
+    for k in next(iter(scores.values())).keys():
+        col_headers.append(k.title())
+    
+    # get row data
+    rows = []
+    for clf in scores.keys():
+        row = [round(v, 4) if isinstance(v, float) else v for v in scores[clf].values()]
+        row.insert(0, clf)
+        rows.append(row)
+    
+    # find longest string for each column, determines column width
+    cols = [list(x) for x in zip(*rows)]
+    cols = [[str(x) for x in l1] for l1 in cols]
+    
+    col_widths = []
+    for c in cols:
+        col_widths.append(max(len(x) for x in c) + 2)
+    
+    # check if header itself is longer than longest column value, if so replace the width value
+    col_widths = [w if w >= len(h) + 2 else len(h) + 2 for h, w in zip(col_headers, col_widths)] # if/else list comprehension
     
     # print out results table header
-    print("{:<25} {:<10} {}".format("Classifier", score.title(), "Parameters"))
-    print("------------------------------------------------")
+    header_str = ""
+    for h, w in zip(col_headers, col_widths):
+        header_str += "{col_header: <{width}}".format(col_header=h, width=w)
     
-    # print out table lines
-    for n, v in scores.items():
-        for k, v in v.items():
-            if k != 'parameters':
-                s = v
-            else:
-                p = v
-        
-        print("{:<25} {:<10} {}".format(n, round(s, 2), p))
+    print(header_str)
+    print("-" * len(header_str))
+    
+    # print out table rows
+    for r in rows:
+        row_str = ""
+        for v, w in zip(r, col_widths):
+            row_str += "{val: <{width}}".format(val=str(v), width=w)
+        print(row_str)
