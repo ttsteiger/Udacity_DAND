@@ -1,4 +1,5 @@
 # helper_functions.py
+from collections import OrderedDict
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -8,6 +9,9 @@ from sklearn.metrics import recall_score
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.preprocessing import MinMaxScaler
+
+# data wrangling
+######################################################################
 
 
 def convert_dict_to_df(dictionary, features, remove_NaN=True, 
@@ -97,35 +101,6 @@ def convert_dict_to_df(dictionary, features, remove_NaN=True,
             df = df.append(val_dict, ignore_index=True)
         
     return df
-
-
-def scatter_plot(df, x, y, normalize=True):
-    """
-    
-    """
-    poi_df = df[df['poi'] == True]
-    x_poi = poi_df[x].fillna(value=0).values.reshape(-1, 1)
-    y_poi = poi_df[y].fillna(value=0).values.reshape(-1, 1)
-    
-    non_poi_df = df[df['poi'] == False]
-    x_non_poi = non_poi_df[x].fillna(value=0).values.reshape(-1, 1)
-    y_non_poi = non_poi_df[y].fillna(value=0).values.reshape(-1, 1)
-    
-    if normalize:
-        x_poi = MinMaxScaler().fit_transform(x_poi)
-        y_poi = MinMaxScaler().fit_transform(y_poi)
-        
-        x_non_poi = MinMaxScaler().fit_transform(x_non_poi)
-        y_non_poi = MinMaxScaler().fit_transform(y_non_poi)
-    
-    # create plot
-    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
-    ax.scatter(x_poi, y_poi, color="red", label="poi")
-    ax.scatter(x_non_poi, y_non_poi, color="blue", label="non poi")
-    ax.set(title="{} vs. {}".format(x, y), xlabel=x, xlim=[-0.02, 1.02], ylabel=y, ylim=[-0.02, 1.02])
-    plt.legend()
-    
-    plt.show()
     
     
 def get_classifier_scores(clf, X, y, random_state=None):
@@ -133,12 +108,19 @@ def get_classifier_scores(clf, X, y, random_state=None):
     
     """
     
+    # check if data set is in a dataframe, if so convert it to a numpy
+    # array
+    if isinstance(X, pd.DataFrame):
+        X = X.values
+    if isinstance(y, pd.Series):
+        y = y.values
+    
     accuracies, precisions, recalls = [], [], []
     sss = StratifiedShuffleSplit(n_splits=100, test_size=0.33, random_state=42)
     
-    for train_ixs, test_ixs in sss.split(X.values, y.values):
-        X_train, X_test = X.values[train_ixs, :], X.values[test_ixs, :]
-        y_train, y_test = y.values[train_ixs] , y.values[test_ixs]
+    for train_ixs, test_ixs in sss.split(X, y):
+        X_train, X_test = X[train_ixs, :], X[test_ixs, :]
+        y_train, y_test = y[train_ixs] , y[test_ixs]
     
         clf.fit(X_train, y_train)
         pred = clf.predict(X_test)
@@ -154,17 +136,16 @@ def get_multi_classifier_scores(names, classifiers, X, y, random_state=None):
     """
     """
     
-    clf_results = {} 
-    
+    clf_scores = OrderedDict()
     for n, clf in zip(names, classifiers):
-        clf_results[n] = {}
+        clf_scores[n] = OrderedDict()
         scores = get_classifier_scores(clf, X, y, random_state=random_state)
         
-        clf_results[n]['accuracy'] = scores[0]
-        clf_results[n]['precision'] = scores[1]
-        clf_results[n]['recall'] = scores[2]
+        clf_scores[n]['accuracy'] = scores[0]
+        clf_scores[n]['precision'] = scores[1]
+        clf_scores[n]['recall'] = scores[2]
     
-    return clf_results
+    return clf_scores
 
 
 def find_best_parameters(names, classifiers, X, y, param_grid, score='accuracy', random_state=None):
@@ -185,17 +166,24 @@ def find_best_parameters(names, classifiers, X, y, param_grid, score='accuracy',
         
     """
     
-    clf_scores = {}
+    # check if data set is in a dataframe, if so convert it to a numpy
+    # array
+    if isinstance(X, pd.DataFrame):
+        X = X.values
+    if isinstance(y, pd.Series):
+        y = y.values
+    
+    clf_scores = OrderedDict()
 
     for n, clf in zip(names, classifiers):
-        clf_scores[n] = {}
+        clf_scores[n] = OrderedDict()
 
         cv = StratifiedShuffleSplit(n_splits=100, test_size=0.33, random_state=random_state)
         clf = GridSearchCV(clf, param_grid[n], cv=cv, scoring=score)
         clf.fit(X, y)
         
-        clf_scores[n][score] = clf.best_score_
         clf_scores[n]['parameters'] = clf.best_params_
+        clf_scores[n][score] = clf.best_score_
     
     return clf_scores
 
@@ -204,17 +192,18 @@ def optimize_features_and_parameters(names, classifiers, X, y, top_features, par
     """
     """
     # perform parameter optimization for varying number of input features
-    clf_scores = {}
+    clf_scores = OrderedDict()
     for i in range(1, len(top_features) + 1):
         features = top_features[:i]
-        X_i = X.loc[:, features].values
+        X_i = X.loc[:, features]
         
         scores = find_best_parameters(names, classifiers, X_i, y, param_grid, score=score, random_state=random_state)
         clf_scores[i] = scores
     
     # select best results for each classifier
-    clf_best_scores = {}
+    clf_best_scores = OrderedDict()
     for n in names:
+        clf_best_scores[n] = OrderedDict()
         best_score, best_i, best_params = 0, 0, None
         
         for i, v in clf_scores.items():
@@ -225,7 +214,9 @@ def optimize_features_and_parameters(names, classifiers, X, y, top_features, par
                         best_i = i
                         best_params = v['parameters']
         
-        clf_best_scores[n] = {score: best_score, 'input features': best_i, 'parameters': best_params}
+        clf_best_scores[n]['i'] = best_i
+        clf_best_scores[n]['parameters'] = best_params
+        clf_best_scores[n][score] = best_score
             
     return clf_best_scores
 
@@ -272,3 +263,72 @@ def print_classifier_table(scores):
         for v, w in zip(r, col_widths):
             row_str += "{val: <{width}}".format(val=str(v), width=w)
         print(row_str)
+        
+##############################################################################
+# plotting
+
+
+def scatter_plot(df, x, y, normalize=True):
+    """
+    
+    """
+    poi_df = df[df['poi'] == True]
+    x_poi = poi_df[x].fillna(value=0).values.reshape(-1, 1)
+    y_poi = poi_df[y].fillna(value=0).values.reshape(-1, 1)
+    
+    non_poi_df = df[df['poi'] == False]
+    x_non_poi = non_poi_df[x].fillna(value=0).values.reshape(-1, 1)
+    y_non_poi = non_poi_df[y].fillna(value=0).values.reshape(-1, 1)
+    
+    if normalize:
+        x_poi = MinMaxScaler().fit_transform(x_poi)
+        y_poi = MinMaxScaler().fit_transform(y_poi)
+        
+        x_non_poi = MinMaxScaler().fit_transform(x_non_poi)
+        y_non_poi = MinMaxScaler().fit_transform(y_non_poi)
+    
+    # create plot
+    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+    ax.scatter(x_poi, y_poi, color="red", label="poi")
+    ax.scatter(x_non_poi, y_non_poi, color="blue", label="non poi")
+    ax.set(title="{} vs. {}".format(x, y), xlabel=x, xlim=[-0.02, 1.02], ylabel=y, ylim=[-0.02, 1.02])
+    plt.legend()
+    
+    plt.show()
+
+    
+def generate_meshgrid(x, y, h=.01):
+    """Create a mesh of points to plot in
+
+    Parameters
+    ----------
+    x: data to base x-axis meshgrid on
+    y: data to base y-axis meshgrid on
+    h: stepsize for meshgrid, optional
+
+    Returns
+    -------
+    xx, yy : ndarray
+    """
+    x_min, x_max = x.min() - 0.1, x.max() + 0.1
+    y_min, y_max = y.min() - 0.1, y.max() + 0.1
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+                         np.arange(y_min, y_max, h))
+    return xx, yy
+
+
+def plot_boundaries(ax, clf, xx, yy, **params):
+    """Plot the decision boundaries for a classifier.
+
+    Parameters
+    ----------
+    ax: matplotlib axes object
+    clf: a classifier
+    xx: meshgrid ndarray
+    yy: meshgrid ndarray
+    params: dictionary of params to pass to contourf, optional
+    """
+    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+    out = ax.contourf(xx, yy, Z, **params)
+    return out
