@@ -101,8 +101,11 @@ def convert_dict_to_df(dictionary, features, remove_NaN=True,
             df = df.append(val_dict, ignore_index=True)
         
     return df
-    
-    
+   
+# model evaluation and optimization
+######################################################################
+
+
 def get_classifier_scores(clf, X, y, random_state=None):
     """
     
@@ -263,9 +266,9 @@ def print_classifier_table(scores):
         for v, w in zip(r, col_widths):
             row_str += "{val: <{width}}".format(val=str(v), width=w)
         print(row_str)
-        
-##############################################################################
+
 # plotting
+##############################################################################
 
 
 def scatter_plot(df, x, y, normalize=True):
@@ -298,8 +301,11 @@ def scatter_plot(df, x, y, normalize=True):
 
     
 def generate_meshgrid(x, y, h=.01):
-    """Create a mesh of points to plot in
-
+    """
+    Source: http://scikit-learn.org/stable/auto_examples/svm/plot_iris.html
+    
+    Create a mesh of points to plot in.
+    
     Parameters
     ----------
     x: data to base x-axis meshgrid on
@@ -318,7 +324,10 @@ def generate_meshgrid(x, y, h=.01):
 
 
 def plot_boundaries(ax, clf, xx, yy, **params):
-    """Plot the decision boundaries for a classifier.
+    """
+    Source: http://scikit-learn.org/stable/auto_examples/svm/plot_iris.html
+    
+    Plot the decision boundaries for a classifier.
 
     Parameters
     ----------
