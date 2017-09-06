@@ -10,8 +10,9 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.preprocessing import MinMaxScaler
 
+
 # data wrangling
-######################################################################
+################################################################################
 
 
 def convert_dict_to_df(dictionary, features, remove_NaN=True, 
@@ -31,8 +32,8 @@ def convert_dict_to_df(dictionary, features, remove_NaN=True,
             adding the data points to the data frame.
 
     Returns:
-        Function returns a pandas data frame with each row representing a data 
-        point with the specified features in its columns.
+        Pandas DataFrame with each row representing a data point. The column 
+        names are equal to the features passed.
     """
 
     # check that first feature passed is 'poi'
@@ -49,8 +50,8 @@ def convert_dict_to_df(dictionary, features, remove_NaN=True,
 
     # loop trough the data dictionary 
     for key in keys:
-        
-        val_dict = {'name': key} # first entry of data point is the name of the person
+        # first entry of data point is the name of the person
+        val_dict = {'name': key}
 
         for feature in features:
             # check if specified feature exists, throw a warning if not and 
@@ -76,7 +77,8 @@ def convert_dict_to_df(dictionary, features, remove_NaN=True,
         if remove_all_zeroes:       
             append = False
             for key, val in val_dict.items(): 
-                if key != 'poi' and key != 'name': # exclude 'poi' and 'name' from criteria
+            	# exclude 'poi' and 'name' from criteria
+                if key != 'poi' and key != 'name':
                     if val != 0 and val != "NaN":
                         append = True
                         break
@@ -85,8 +87,10 @@ def convert_dict_to_df(dictionary, features, remove_NaN=True,
         # True
         elif remove_any_zeroes:
             append = True
-            keys =  [f for f in features if f not in ('poi', 'name')] # exclude 'poi' and 'name' from criteria
-            val_list = [val_dict.get(k) for k in keys] # list containing values of remaining features
+            # exclude 'poi' and 'name' from criteria
+            keys =  [f for f in features if f not in ('poi', 'name')]
+            # list containing values of remaining features
+            val_list = [val_dict.get(k) for k in keys]
 
             if 0 in val_list or "NaN" in val_list:
                 append = False
@@ -103,16 +107,28 @@ def convert_dict_to_df(dictionary, features, remove_NaN=True,
     return df
    
 # model evaluation and optimization
-######################################################################
+################################################################################
 
 
 def get_classifier_scores(clf, X, y, random_state=None):
     """
-    
+	Train classifier and evaluate its accuracy, precision and recall score. 
+	Uses 100 stratified and shuffled splits with a split ratio of 33% for 
+	crross-validation and calculates the mean values for each metric.
+
+    Args:
+    	clf: Scikit-learn classifier object.
+    	X: Feature numpy array or DataFrame.
+    	y: Label numpy array Dataframe.
+    	random_state: Seed for randomizer in the StratifiedShuffleSplit()
+    		function.
+
+    Returns:
+    	List containing the mean accuracy, precision and recall for the 
+    	evaluated classifier.
     """
     
-    # check if data set is in a dataframe, if so convert it to a numpy
-    # array
+    # check if data set is in a dataframe, if so convert it to a numpy array
     if isinstance(X, pd.DataFrame):
         X = X.values
     if isinstance(y, pd.Series):
@@ -137,6 +153,21 @@ def get_classifier_scores(clf, X, y, random_state=None):
 
 def get_multi_classifier_scores(names, classifiers, X, y, random_state=None):
     """
+    Calculate the accuracy, precision and recall scores for multiple 
+    classifiers. Uses 100 stratified and shuffled splits with a split ratio of 
+    33% for crross-validation and calculates the mean values for each metric.
+	
+	Args:
+		names: List of classifier names.
+		classifiers: List of scikit-learn classifier objects.
+		X: Feature numpy array or DataFrame.
+		y: Label numpy array Dataframe.
+		random_state: Seed for randomizer in the StratifiedShuffleSplit()
+    		function.
+	
+	Returns:
+		Dictionary containing dictionairies for each classifier name key with
+    	accuracy, precision and recall key-value pairs.
     """
     
     clf_scores = OrderedDict()
@@ -151,26 +182,30 @@ def get_multi_classifier_scores(names, classifiers, X, y, random_state=None):
     return clf_scores
 
 
-def find_best_parameters(names, classifiers, X, y, param_grid, score='accuracy', random_state=None):
+def find_best_parameters(names, classifiers, X, y, param_grid, score='accuracy', 
+                         random_state=None):
     """
-    Exhaustive search over specified parameter values for passed classifiers optimizing based on the specified
-    scoring metric.
+    Exhaustive search over specified parameter values for passed classifiers 
+    optimizing based on the specified scoring metric.
     
     Args:
-        names:
-        classifiers:
-        X:
-        y:
-        param_grid:
-        score:
-        random_state:
+        names: List of classifier names.
+        classifiers: List of scikit-learn classifier objects.
+        X: Feature numpy array or DataFrame.
+    	y: Label numpy array Dataframe.
+        param_grid: Dictionary of parameter dictionaries. The keys have to be
+        	equal to the entries in the names list.
+        score: Scoring metric. Can be set to 'accuracy', 'precision' or
+        	'recall'.
+        random_state: Seed for randomizer in the StratifiedShuffleSplit()
+    		function.
 
     Returns:
-        
+    	Dictionary containing dictionairies for each classifier name key with
+    	the optimally performing parameter set and the corresponding score.
     """
     
-    # check if data set is in a dataframe, if so convert it to a numpy
-    # array
+    # check if data set is in a dataframe, if so convert it to a numpy array
     if isinstance(X, pd.DataFrame):
         X = X.values
     if isinstance(y, pd.Series):
@@ -181,7 +216,8 @@ def find_best_parameters(names, classifiers, X, y, param_grid, score='accuracy',
     for n, clf in zip(names, classifiers):
         clf_scores[n] = OrderedDict()
 
-        cv = StratifiedShuffleSplit(n_splits=100, test_size=0.33, random_state=random_state)
+        cv = StratifiedShuffleSplit(n_splits=100, test_size=0.33, 
+                                    random_state=random_state)
         clf = GridSearchCV(clf, param_grid[n], cv=cv, scoring=score)
         clf.fit(X, y)
         
@@ -191,16 +227,43 @@ def find_best_parameters(names, classifiers, X, y, param_grid, score='accuracy',
     return clf_scores
 
 
-def optimize_features_and_parameters(names, classifiers, X, y, top_features, param_grid, score='accuracy', random_state=None):
+def optimize_features_and_parameters(names, classifiers, X, y, features, 
+                                     param_grid, score='accuracy', 
+                                     random_state=None):
     """
+	Find the optimum combination of classifier, number of top features to use
+	and parameter settings. Optimization is based on the scoring metric passed.
+
+    Args:
+		names: List of classifier names.
+        classifiers: List of scikit-learn classifier objects.
+        X: Feature numpy array or DataFrame.
+    	y: Label numpy array Dataframe.
+    	features: List containing the ordered feature names.
+        param_grid: Dictionary of parameter dictionaries. The keys have to be
+        	equal to the entries in the names list.
+        score: Scoring metric. Can be set to 'accuracy', 'precision' or
+        	'recall'.
+        random_state: Seed for randomizer in the StratifiedShuffleSplit()
+    		function.
+    Returns:
+    	Dictionary containing dictionairies for each classifier name key with
+    	the optimally performing parameter set, the optimum number of top 
+    	features to use and the corresponding score.
+
+    	{clf_name1: {prop1: ..., prop2: ..., ...},
+    		 clf_name2: {...}, 
+    		 ...}
     """
+
     # perform parameter optimization for varying number of input features
     clf_scores = OrderedDict()
-    for i in range(1, len(top_features) + 1):
-        features = top_features[:i]
-        X_i = X.loc[:, features]
+    for i in range(1, len(features) + 1):
+        features_i = features[:i]
+        X_i = X.loc[:, features_i]
         
-        scores = find_best_parameters(names, classifiers, X_i, y, param_grid, score=score, random_state=random_state)
+        scores = find_best_parameters(names, classifiers, X_i, y, param_grid, 
+                                      score=score, random_state=random_state)
         clf_scores[i] = scores
     
     # select best results for each classifier
@@ -226,7 +289,15 @@ def optimize_features_and_parameters(names, classifiers, X, y, top_features, par
 
 def print_classifier_table(scores):
     """
-    
+	Print out a table containing ...
+
+    Args:
+    	scores: Dictionary containing informmation about classifiers that should
+    		be displayed in the table.
+    		
+    		{clf_name1: {prop1: ..., prop2: ..., ...},
+    		 clf_name2: {...}, 
+    		 ...}
     """
     
     # get column names
@@ -237,7 +308,8 @@ def print_classifier_table(scores):
     # get row data
     rows = []
     for clf in scores.keys():
-        row = [round(v, 4) if isinstance(v, float) else v for v in scores[clf].values()]
+        row = [round(v, 4) if isinstance(v, float) else v (for v in
+                                                           scores[clf].values())]
         row.insert(0, clf)
         rows.append(row)
     
@@ -249,8 +321,11 @@ def print_classifier_table(scores):
     for c in cols:
         col_widths.append(max(len(x) for x in c) + 2)
     
-    # check if header itself is longer than longest column value, if so replace the width value
-    col_widths = [w if w >= len(h) + 2 else len(h) + 2 for h, w in zip(col_headers, col_widths)] # if/else list comprehension
+    # check if header itself is longer than longest column value, if so replace 
+    # the width value
+    col_widths = [w if w >= len(h) + 2 else len(h) + 2 (for h, w in
+                                                        zip(col_headers, 
+                                                            col_widths))]
     
     # print out results table header
     header_str = ""
@@ -268,7 +343,7 @@ def print_classifier_table(scores):
         print(row_str)
 
 # plotting
-##############################################################################
+################################################################################
 
 
 def scatter_plot(df, x, y, normalize=True):
