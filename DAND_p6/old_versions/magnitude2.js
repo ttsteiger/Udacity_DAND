@@ -5,9 +5,8 @@
 function draw(geo_data) {
 
     //graphic settings
-    var margin = 75,
-        width = 1920 - margin,
-        height = 1080 - margin,
+    var width = 1366,
+        height = 768,
         rad_min = 5,
         rad_max = 20;
 
@@ -19,8 +18,8 @@ function draw(geo_data) {
 
     var svg = d3.select("body")
         .append("svg")
-          .attr("width", width + margin)
-          .attr("height", height + margin);
+          .attr("width", width)
+          .attr("height", height);
 
     var projection = d3.geo.mercator()
                            .scale(220)

@@ -5,8 +5,8 @@
 function draw(geo_data) {
 
     // graphic settings
-    var width = 1920,
-        height = 1080,
+    var width = 1366,
+        height = 768,
         rad_min = 5,
         rad_max = 20;
 
