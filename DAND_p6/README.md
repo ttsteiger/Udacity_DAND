@@ -20,16 +20,24 @@ contains earthquakes with a magnitude higher than 5.5 on the Richter scale.
 
 ## Design
 
+The final visualization I ended up with is a bubble chart on top of a mercator
+projection of the globe. The magnitude is encoded in the bubble size as well as
+the color of the bubbles. As the Richter scale is a logarithmic scale, meaning
+that a
+
+
 chart type, visual encodings, and layout
 
 
 ## Feedback
 
-After creating an initial working prototype I discussed the visualization with
+After creating an initial working [prototype](index2.html) I discussed the visualization with
 friends and co-workers. Many fine iterations happened based on their thoughts
 and I want to mention some of them here in this section.
 
-[Prototype](index2.html)
+### First Iteration
+
+
 
 - adding basic control panel
 
@@ -37,7 +45,7 @@ and I want to mention some of them here in this section.
 - hue vs. size
 
 
-- display magnitude upon hover
+- display magnitude and additional information upon hover
 
 
 - feedback on css sytling and page layout (add footer)
