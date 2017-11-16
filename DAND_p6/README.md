@@ -22,6 +22,8 @@ Types of boundaries visible as strong earthquakes mainly happen in specific plac
 
 Evolution over time?
 
+Data preparation with short python script...
+
 
 ## Design
 
@@ -67,10 +69,26 @@ ended up with.
 
 ![Control Panel](image2.png)
 
-
-- adding basic control panel
+Upon page load, all the data is displayed. By pressing the "Run Animation" button
+the animation starts with an empty world map in 1965 and adds the earthquakes 
+for all the following years. Selecting certain years through the checkboxes 
+followd by pressing the "Display Selection" allows to investigate only certain
+years. The "Select All" button checks all the boxes while the "Unselect All"
+resets the panel.
 
 ### Second Iteration
+
+Next in line was improving the representation of the data on the world map. So 
+far I have only used 
+
+
+![Bubble Size and Color](image3.png)
+
+Furthermore, I changed the animation so that it only displays the data for each
+year separately and does not accumulate and overlay it over time.
+
+In my opinion, this measures improved the perception of magnitude differences
+significantly.
 
 - hue vs. size and change of animation from overlaying to displaying only a single year
 
