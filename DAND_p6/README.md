@@ -9,10 +9,27 @@ earthquakes for each year separately but the included buttons and checkboxes
 allow to look at any selection the user desires.
 
 The data used for this project was collected by the [National Earthquake 
-Information Center](https://earthquake.usgs.gov/contactus/golden/neic.php) (NEIC)
-and is publicly available on their website. I used a preprocessed data set
-from [Kaggle](https://www.kaggle.com/usgs/earthquake-database) which only 
-contains earthquakes with a magnitude higher than 5.5 on the Richter scale.
+Information Center](https://earthquake.usgs.gov/contactus/golden/neic.php) and 
+is publicly available on their website. I used a preprocessed data set from 
+[Kaggle](https://www.kaggle.com/usgs/earthquake-database) which only contains 
+earthquakes with a magnitude higher than 5.5 on the Richter scale. Before using 
+the dataset, I preprocessed  with a simple Python script.
+
+Looking at the animation and single years gives a good overview about the
+frequency of earthquakes within the different magnitude categories. Eathquakes
+with a magnitude between 5 and 6 can already cause major damage to badly 
+constructed buildings. More than 1000 of those occur every year but of course
+not all of them are recorded by the NEIC as a large portion of them takes place
+deep underground. Earthquakes with a magnitude between 6 and 7 on the Richter 
+scale are already considered as strong. They can damage even well-built 
+structures and happen around a 100 times each year. The category of "major"
+earthquakes (7.0-7.9) already affects most buildings that were designed to
+withstand strong shocks and can be observed at least 10 times across the globe.
+All earthquakes stronger than 8 on the Richter scale are described as "great",
+can lead to total destruction and luckily only happen every few years. In this
+category fall such earthquakes as the one off the West coast of Nothern Sumatra
+
+
 
 Key messages from the plot...
 
@@ -79,7 +96,7 @@ resets the panel.
 ### Second Iteration
 
 Next in line was improving the representation of the data on the world map. So 
-far I have only used 
+far I have only used
 
 
 ![Bubble Size and Color](image3.png)
@@ -88,11 +105,15 @@ Furthermore, I changed the animation so that it only displays the data for each
 year separately and does not accumulate and overlay it over time.
 
 In my opinion, this measures improved the perception of magnitude differences
-significantly.
+significantly and left the map far less crowded.
 
 - hue vs. size and change of animation from overlaying to displaying only a single year
 
 ### Third Iteration
+
+One of the feedbacks I received was to use tooltips to display additional
+information in my visualization.
+
 
 - display magnitude and additional information upon hover
 
