@@ -13,7 +13,7 @@ Information Center](https://earthquake.usgs.gov/contactus/golden/neic.php) and
 is publicly available on their website. I used a preprocessed data set from 
 [Kaggle](https://www.kaggle.com/usgs/earthquake-database) which only contains 
 earthquakes with a magnitude higher than 5.5 on the Richter scale. Before using 
-the dataset, I preprocessed  with a simple Python script.
+the dataset, I preprocessed it with a simple Python script.
 
 Looking at the animation and single years gives a good overview about the
 frequency of earthquakes within the different magnitude categories. Eathquakes
@@ -28,19 +28,21 @@ withstand strong shocks and can be observed at least 10 times across the globe.
 All earthquakes stronger than 8 on the Richter scale are described as "great",
 can lead to total destruction and luckily only happen every few years. In this
 category fall such earthquakes as the one off the West coast of Nothern Sumatra
+(9,1) that lead to the Tsunami in 2004 or or the on in Japan in 2011 (9.1) that
+caused the meltdowns in the Fukushima nuclear plant.
 
-
-
-Key messages from the plot...
-
-Distribution along tectonic plate boundaries
-
-Types of boundaries visible as strong earthquakes mainly happen in specific places
-
-Evolution over time?
-
-Data preparation with short python script...
-
+Of course I knew beforehand that the boundaries of the tectonic plates are
+the most seismically active zones but I was nevertheless surpised on how 
+perfectly the data points from the last 50 years align with these boundaries. 
+Based on the earthquake magnitudes at these locations one can also clearly
+identify the different types of tectonic boundaries. For example the extremely
+active zone along the western coast of South America can be explained by the 
+converging boundary formed by the Nazca and South American plate. There the 
+plates slide towards each other and form a subduction zone accompanied by
+very strong earthquakes. In the east on the other hand, the South American and 
+the African plate form a diverging boundary where they move away from each 
+other. These zones are far less active which is confirmed by the many small 
+green bubbles.
 
 ## Design
 
@@ -98,7 +100,6 @@ resets the panel.
 Next in line was improving the representation of the data on the world map. So 
 far I have only used
 
-
 ![Bubble Size and Color](image3.png)
 
 Furthermore, I changed the animation so that it only displays the data for each
@@ -121,42 +122,9 @@ information in my visualization.
 
 
 
-
 ## Resources
 
 * D3.js
 * NEIC
 * chromatic color scale
-
-
-
-## Data
-
-columns:
-
-'Date', 'Time', 'Latitude', 'Longitude', 'Type', 'Depth', 'Depth Error',
-'Depth Seismic Stations', 'Magnitude', 'Magnitude Type',
-'Magnitude Error', 'Magnitude Seismic Stations', 'Azimuthal Gap',
-'Horizontal Distance', 'Horizontal Error', 'Root Mean Square', 'ID',
-'Source', 'Location Source', 'Magnitude Source', 'Status'
-
-magnitude range:
-
-5.5 -> 9.1
-
-magnitude categories:
-
-http://www.geo.mtu.edu/UPSeis/magnitude.html
-
-depth range:
-
--1.1 -> 700
-
-depth categories:
-
-https://earthquake.usgs.gov/learn/topics/determining_depth.php
-
-type:
-
-'Earthquake' 'Nuclear Explosion' 'Explosion' 'Rock Burst'
-
+* Tooltip
