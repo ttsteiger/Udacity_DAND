@@ -193,42 +193,62 @@ function draw(geo_data) {
 }
 
 function update_mag_year(year, svg, clear = true) {
-        // display only the earthquakes from a certain year if clear is set to
-        // true, otherwise the data displayed before this function call remains
+    // display only the earthquakes from a certain year if clear is set to
+    // true, otherwise the data displayed before this function call remains
 
-        // display year
-        d3.select(".rightpane h2")
-          .text(year);
+    // display year
+    d3.select(".rightpane h2")
+      .text(year);
 
+    // make bubbles from previous year fully opaque if clear is set to true
+    if (clear && year != 1965) {
+        var bubbles_prev_year = svg.selectAll("#y" + (year - 1) + " circle");
+        bubbles_prev_year.transition()
+                         .duration(100)
+                         .style('opacity', 0.0)                
+    }  
 
+    // select all bubbles that correspond with the specified year
+    var bubbles_year = svg.selectAll("#y" + year + " circle");
 
-        // make bubbles from previous year fully opaque if clear is set to true
-        if (clear && year != 1965) {
-            var bubbles_prev_year = svg.selectAll("#y" + (year - 1) + " circle");
-            bubbles_prev_year.transition()
-                             .duration(100)
-                             .style('opacity', 0.0)                
-        }  
+    // display bubbles from current year
+    bubbles_year.transition()
+                .duration(100)
+                .style('opacity', 0.4)
 
-        // select all bubbles that correspond with the specified year
-        var bubbles_year = svg.selectAll("#y" + year + " circle");
+    // display tooltip if clear is set to false as this is when looking at
+    // a specific selection and not during the anmation
+    if (clear === false) {
+        // initiate tooltip
+        var tip = d3.tip()
+                    .attr('class', 'd3-tip')
+                    .offset([-10, 0])
+                    .html(function(d) {
+                        return "<strong>Magnitude:</strong> <span style='color:red'>" + d['Magnitude'] + "</span>";
+                    });
 
-        // display bubbles from current year
-        bubbles_year.transition()
-                    .duration(100)
-                    .style('opacity', 0.4)
+        svg.call(tip);
+        // set tooltip on mouseover
+        bubbles_year.on('mouseover', tip.show)
+                    .on('mouseout', tip.hide);
+    };
+        
 }
 
 function run_animation() {
+    // animation of all the data from each year in chronological order
 
     // select svg element
     var svg = d3.select(".rightpane svg")
+
+    // remove tooltips when running animation
+    d3.select(".d3-tip").remove();
 
     // list containing all years
     var years = [];
     for (var i = 1965; i <= 2016; i += 1) {
         years.push(i);
-      }
+    }
 
     // year animation
     var year_idx = 0;
@@ -247,18 +267,35 @@ function run_animation() {
         update_mag_year(years[year_idx], svg);
         year_idx++;
 
-        // finish animation loop when last year is reached
+        // last year reached
         if (year_idx >= years.length) {
+            // display tooltip for bubbles of 2016
+            var tip = d3.tip()
+                        .attr('class', 'd3-tip')
+                        .offset([-10, 0])
+                        .html(function(d) {
+                            return "<strong>Magnitude:</strong> <span style='color:red'>" + d['Magnitude'] + "</span>";
+                        });
+
+            svg.call(tip);
+
+            var bubbles_2016 = svg.selectAll("#y2016 circle");
+            bubbles_2016.on('mouseover', tip.show)
+                        .on('mouseout', tip.hide);
+            
+            // stop animation
             clearInterval(year_interval)
-        }
-    }, 600);
+        };
+    }, 600);   
 }
 
 function set_all_checkboxes(check_value) {
-    //
+    // set all checkboxes either to true or false
 
+    // select all checkboxes
     var checkboxes = document.getElementsByName('year');
 
+    // set the value of all checkboxes
     for (var i = 0; i < checkboxes.length; i++) { 
        if (check_value === true) {
           checkboxes[i].checked = true;
@@ -273,12 +310,15 @@ function display_selection() {
     // select svg element
     var svg = d3.select(".rightpane svg")
 
-    // hide all bubbles in the first animation frame 
+    // hide all bubbles 
     var bubbles = svg.selectAll(".bubbles circle")
     
     bubbles.transition()
            .duration(0)
            .style('opacity', 0.0);
+
+    // remove all tooltips
+    d3.select(".d3-tip").remove();
 
     // find all the checked boxes and the correpsonding values 
     var checked_boxes = document.querySelectorAll('.year-checkbox:checked');

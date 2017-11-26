@@ -6,7 +6,7 @@ In this project I created an animated visualization of all the significant
 earthquakes that happened between 1956 and 2016. For this visualization I used 
 the JavaScript library [D3.js](https://d3js.org/). The animation shows the 
 earthquakes for each year separately but the included buttons and checkboxes
-allow to look at any selection the user desires.
+allow to look at any selection the user wants to.
 
 The data used for this project was collected by the [National Earthquake 
 Information Center](https://earthquake.usgs.gov/contactus/golden/neic.php) and 
@@ -28,7 +28,7 @@ withstand strong shocks and can be observed at least 10 times across the globe.
 All earthquakes stronger than 8 on the Richter scale are described as "great",
 can lead to total destruction and luckily only happen every few years. In this
 category fall such earthquakes as the one off the West coast of Nothern Sumatra
-(9,1) that lead to the Tsunami in 2004 or or the on in Japan in 2011 (9.1) that
+(9.1) that lead to the Tsunami in 2004 or or the on in Japan in 2011 (9.1) that
 caused the meltdowns in the Fukushima nuclear plant.
 
 Of course I knew beforehand that the boundaries of the tectonic plates are
@@ -53,19 +53,15 @@ that a magnitude increase of 1 denotes an earthquake that is 10 times stronger,
 I think that using two visual encodings simultaneously is a reasonable measure
 to reinforce the differences. Including color also allows to gain better
 information when all earthquakes are displayed simultaneously and the data points
-overlie with each other.
+overlie with each other. I used the red for the bubbles of the strongest 
+earthquakes as most people associate danger with this color while green is 
+perceived as less harmful.
 
-For the bubble size also logarithmic scale
-
-
-red for severe earthquakes and green for weaker ones as most people associate
-danger with the color red
-
-
-
-
-chart type, visual encodings, and layout
-
+The page is split into two panes. On the left side is a short introduction
+as well as the control panel to play around with the visualization. The control
+section contains five buttons as well as a checkbox for each year in the data 
+set. On the right side is the map with all the data points upon page load as 
+well as a legend in the top right corner.
 
 ## Feedback
 
@@ -112,9 +108,11 @@ significantly and left the map far less crowded.
 
 ### Third Iteration
 
-One of the feedbacks I received was to use tooltips to display additional
-information in my visualization.
+One of the feedbacks I received was to use tooltips to display the exact 
+magnitude of a bubble when .
 
+
+![Tooltip](image4.png)
 
 - display magnitude and additional information upon hover
 
