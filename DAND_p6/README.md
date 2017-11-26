@@ -69,7 +69,7 @@ After creating an initial working prototype I discussed the
 visualization with friends and co-workers. Many fine iterations happened based 
 on their thoughts and I want to mention some of them here in this section.
 
-### First Iteration
+### First Improvement
 
 Starting from a simple animation that plays upon page load and displays all the 
 earthquakes accumulated over the years I started working on a control panel to 
@@ -91,38 +91,42 @@ followd by pressing the "Display Selection" allows to investigate only certain
 years. The "Select All" button checks all the boxes while the "Unselect All"
 resets the panel.
 
-### Second Iteration
+### Second Improvement
 
-Next in line was improving the representation of the data on the world map. So 
-far I have only used
+Next in line was improving the representation of the data on the world map. 
+People told me that it was hard to distinguish between individual data points
+and that map looked very crowded. 
+
+So far I have only used the size of the bubbles to display the magnitude. I 
+played around with various color scales from the [d3-scale-chromatic]
+(https://github.com/d3/d3-scale-chromatic) package and ended up with a 
+diverging color scale that changes from green over yellow to red. I think this
+choice corresponds well with the common perception that green is considered as
+safe while red means danger (similar to a street light). I also decreased the
+minimum radius of the bubbles to reinforce the difference in size.
 
 ![Bubble Size and Color](image3.png)
 
 Furthermore, I changed the animation so that it only displays the data for each
-year separately and does not accumulate and overlay it over time.
+year separately and does not accumulate and overlay it over time. In my opinion, 
+this measures improved the perception of magnitude differences significantly and 
+left the map far less crowded.
 
-In my opinion, this measures improved the perception of magnitude differences
-significantly and left the map far less crowded.
-
-- hue vs. size and change of animation from overlaying to displaying only a single year
-
-### Third Iteration
+### Third Improvement
 
 One of the feedbacks I received was to use tooltips to display the exact 
-magnitude of a bubble when .
-
+magnitude of a bubble when the cursor hoovers over it. To achieve this used the
+help of the [d3-tip]() package. By calling a `tip()` object on the svg map, it
+allows to display html upon a 'mouseover' event. I think this addition makes
+the visualization more informativ as well feeling more interactive.
 
 ![Tooltip](image4.png)
 
-- display magnitude and additional information upon hover
-
-
-
-
-
 ## Resources
 
-* D3.js
-* NEIC
-* chromatic color scale
-* Tooltip
+* D3.js: [https://d3js.org/](https://d3js.org/)
+* NEIC [https://earthquake.usgs.gov/contactus/golden/neic.php]
+(https://earthquake.usgs.gov/contactus/golden/neic.php)
+* d3-scale-chromatic: [https://github.com/d3/d3-scale-chromatic]
+(https://github.com/d3/d3-scale-chromatic)
+* d3-tip: [https://github.com/Caged/d3-tip](https://github.com/Caged/d3-tip)
