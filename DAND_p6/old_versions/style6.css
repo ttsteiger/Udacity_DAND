@@ -82,7 +82,7 @@ circle {
     opacity: 0.4;
 }
 
-.bubbles circle:hover {
+circle:hover {
 	stroke: black;
 }
 
