@@ -125,8 +125,6 @@ the visualization more informativ as well feeling more interactive.
 ## Resources
 
 * D3.js: [https://d3js.org/](https://d3js.org/)
-* NEIC [https://earthquake.usgs.gov/contactus/golden/neic.php]
-(https://earthquake.usgs.gov/contactus/golden/neic.php)
-* d3-scale-chromatic: [https://github.com/d3/d3-scale-chromatic]
-(https://github.com/d3/d3-scale-chromatic)
+* NEIC: [https://earthquake.usgs.gov/contactus/golden/neic.php](https://earthquake.usgs.gov/contactus/golden/neic.php)
+* d3-scale-chromatic: [https://github.com/d3/d3-scale-chromatic](https://github.com/d3/d3-scale-chromatic)
 * d3-tip: [https://github.com/Caged/d3-tip](https://github.com/Caged/d3-tip)
